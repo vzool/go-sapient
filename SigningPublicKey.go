@@ -44,8 +44,9 @@ func (key *SigningPublicKey) Generate() {
 }
 
 // Verify data signature
-func (key *SigningPublicKey) Verify(message []byte, signature []byte) bool {
-	return ed25519.Verify(ed25519.PublicKey(key[:]), message, signature)
+func (key *SigningPublicKey) Verify(message, signature []byte) bool {
+
+	return ed25519.Verify(key[:], message, signature)
 }
 
 // Copy other key so you can import any key here,

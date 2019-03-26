@@ -105,27 +105,6 @@ func TestSigningSecretKey_LoadByConstructors(t *testing.T) {
 	}
 }
 
-// func TestSnippet(t *testing.T) {
-// 	// Same keys in Hex format
-// 	secretKeyStr := "617875dc62d9cda41134821da18030ca6a82aac2e368a7e4f5b47f225ec7d1cd2756351404d9250f2ece65126013c0b3fd558710d00e4c9a3fb0a4a224654583"
-// 	publicKeyStr := "8e92b3e7362955f78dc5062690e9942006bc959a47d9194ad993e21bf5c49d92"
-// 	secretKey, _ := hex.DecodeString(secretKeyStr)
-// 	// publicKey, _ := hex.DecodeString(publicKeyStr)
-
-// 	// 2756351404d9250f2ece65126013c0b3fd558710d00e4c9a3fb0a4a224654583
-// 	// 34858e8afb60eec2d95fa2a6b3a2aacc2cdba63c64d307c11d8fc5155378fe76
-// 	// 34858e8afb60eec2d95fa2a6b3a2aacc2cdba63c64d307c11d8fc5155378fe76
-// 	godiumPublicKey := hex.EncodeToString(
-// 		// sign.New(secretKey[:]).PublicKey(),
-// 		scalarmult.Curve25519Base(nil, secretKey),
-// 		// scalarmult.ScalarMultBase(nil, secretKey),
-// 	)
-
-// 	t.Error("Match:", godiumPublicKey == publicKeyStr)
-// 	fmt.Println("godium PublicKey:", godiumPublicKey)
-// 	fmt.Println("original PublicKey:", publicKeyStr)
-// }
-
 func TestSigningSecretKey_LoadKeys(t *testing.T) {
 
 	for index, encoded := range testSigningSecretKeys {
@@ -142,7 +121,7 @@ func TestSigningSecretKey_LoadKeys(t *testing.T) {
 
 		if publicKey.String() != testDerivedPublicKeys[index] {
 
-			t.Errorf("Public Key missmatch generated(%v) - original(%v)",
+			t.Errorf("Public Key missmatch\ngenerated(%v)\noriginal(%v)",
 				publicKey,
 				testDerivedPublicKeys[index],
 			)
@@ -153,7 +132,7 @@ func TestSigningSecretKey_LoadKeys(t *testing.T) {
 		// Test: check if final sercet key are the same
 		if privateKey.String() != testSigningSecretKeys[index] {
 
-			t.Errorf("Secret Key missmatch generated(%v) - original(%v)",
+			t.Errorf("Secret Key missmatch\ngenerated(%v)\noriginal(%v)",
 				privateKey,
 				testSigningSecretKeys[index],
 			)
@@ -188,21 +167,19 @@ func TestSigningSecretKey_SigningAndVerify(t *testing.T) {
 
 		// Verify Signature
 
-		// Test generate own signature
+		// Test: match generated signature with provided ones
+		if sig := Base64UrlEncode(signature); sig != testDataSignature[i] && sig+"==" != testDataSignature[i] {
 
+			t.Errorf("Signature missmatch\n%v\n%v", sig, testDataSignature[i])
+		}
+
+		// Test: generate own signature
 		if !key.PublicKey().Verify(message, signature) {
 
 			t.Error("Signature failed to be verified")
 		}
 
-		if sig := Base64UrlEncode(signature); sig != testDataSignature[i] {
-
-			t.Errorf("Signature missmatch\n%v\n%v", sig, testDataSignature[i])
-
-			return
-		}
-
-		/* sentSignature, err := Base64UrlDecode(dataSignature[i])
+		sentSignature, err := Base64UrlDecode(testDataSignature[i])
 
 		if err != nil {
 			t.Error(err.Error())
@@ -214,25 +191,6 @@ func TestSigningSecretKey_SigningAndVerify(t *testing.T) {
 				t.Errorf("Byte missmatch(%v)!= (%v)", x, y)
 			}
 		}
-
-		// Test match signature
-
-		if sig := Base64UrlEncode(signature); sig != dataSignature[i] {
-			t.Errorf("Signature missmatch: generated(%v) - original(%v)", sig, dataSignature[i])
-		}
-
-		// Test sent signature
-
-		signature, err = Base64UrlDecode(dataSignature[i])
-
-		if err != nil {
-			t.Error(err.Error())
-		}
-
-		if !pk.Verify(message, signature) {
-
-			t.Error("Signature failed to be verified")
-		} */
 	}
 }
 

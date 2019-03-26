@@ -1,7 +1,6 @@
 package sapient
 
 import (
-	// "gitub.com/vzool/go-sapient/internal/edwards25519"
 	"golang.org/x/crypto/ed25519"
 )
 
@@ -41,10 +40,7 @@ func NewSigningSecretKey(oldKey interface{}) *SigningSecretKey {
 // Sign data and generate signature
 func (key *SigningSecretKey) Sign(message []byte) []byte {
 
-	return ed25519.Sign(
-		ed25519.NewKeyFromSeed(key[:SigningPublicKeyBytesSize]),
-		message,
-	)
+	return ed25519.Sign(key[:], message)
 }
 
 // PublicKey is to be generated from this key and it will return Signing Public Key
