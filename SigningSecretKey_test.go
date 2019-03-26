@@ -35,7 +35,8 @@ var testDerivedPublicKeys = []string{
 	"1I0jEJIQ4MxmnH_KUbA1IkK2BgGRVuxjMLTZpxRT35E=",
 }
 
-var data = []string{
+// Random data
+var testData = []string{
 	"BB6D4B7A-3757-4934-82EE-0DBB7749850C",
 	"B8ACFCE2-5E26-4DB9-B407-B02BC1E059BC",
 	"5015E190-36A5-4393-9E4D-FA0363A58334",
@@ -53,7 +54,7 @@ var data = []string{
 
 // Those signatures were genereted by above secret keys for the above data.
 // Again every index belong to other data related in other arrays in the same index.
-var dataSignature = []string{
+var testDataSignature = []string{
 	"vVhhKl3ssodL_MTruPYb4i0kzlPcL0P416HeWZYiMQUaoxNTnbwn6dAFr68wAc6k56HC2sKYalVIPyzPx_BIBw==",
 	"kUsGiQC0ug2EDaumTgbX-Nl7-z5GDL6gJ2akkEs_5WI9gZJdbnRMFWSDN70bvJr-G6LlmjIUjnx_ZJeAP772Aw==",
 	"oxS58DiKW0COHlXlHqNUwvCwQHZar_JKHO_NKEEWZe6LgtCrJOkkXsVUSzzjNkC4vAMBohLUFx4L5xx1vztpAg==",
@@ -66,13 +67,13 @@ var dataSignature = []string{
 	"mIYtU7gDzVZ2sBx3_zLBaKa1a2gfStaqiNdp8mpSotrWxThRQBG3Oub9f_J_J3A7jC7WlcZljLlJhq91EAMMBA==",
 }
 
-func TestSigningSecretKey(t *testing.T) {
+func TestSigningSecretKey_LoadByConstructors(t *testing.T) {
 
 	// test for 10 times
 
 	for i := 0; i < 10; i++ {
 
-		// Load key in string format
+		// TEST: Load key in string format
 		key := NewSigningSecretKey(testSigningSecretKeys[i])
 
 		if key.String() != testSigningSecretKeys[i] {
@@ -83,7 +84,7 @@ func TestSigningSecretKey(t *testing.T) {
 			)
 		}
 
-		// Load key in bytes format
+		// TEST: Load key in bytes format
 		sk, err := Base64UrlDecode(testSigningSecretKeys[i])
 
 		if err != nil {
@@ -131,7 +132,9 @@ func TestSigningSecretKey_LoadKeys(t *testing.T) {
 
 		// Test: Load key at instance creation
 
-		privateKey := NewSigningSecretKey(encoded)
+		privateKey := NewSigningSecretKey(nil)
+
+		privateKey.Load(encoded)
 
 		// Test: Load key after instance creation
 
@@ -147,6 +150,7 @@ func TestSigningSecretKey_LoadKeys(t *testing.T) {
 			break
 		}
 
+		// Test: check if final sercet key are the same
 		if privateKey.String() != testSigningSecretKeys[index] {
 
 			t.Errorf("Secret Key missmatch generated(%v) - original(%v)",
@@ -166,7 +170,7 @@ func TestSigningSecretKey_SigningAndVerify(t *testing.T) {
 
 	for i, sk := range testSigningSecretKeys {
 
-		message := []byte(data[i])
+		message := []byte(testData[i])
 
 		key := NewSigningSecretKey(sk)
 
@@ -189,6 +193,13 @@ func TestSigningSecretKey_SigningAndVerify(t *testing.T) {
 		if !key.PublicKey().Verify(message, signature) {
 
 			t.Error("Signature failed to be verified")
+		}
+
+		if sig := Base64UrlEncode(signature); sig != testDataSignature[i] {
+
+			t.Errorf("Signature missmatch\n%v\n%v", sig, testDataSignature[i])
+
+			return
 		}
 
 		/* sentSignature, err := Base64UrlDecode(dataSignature[i])

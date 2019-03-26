@@ -1,9 +1,7 @@
 package sapient
 
 import (
-	"fmt"
-
-	"go.artemisc.eu/godium/scalarmult"
+	// "gitub.com/vzool/go-sapient/internal/edwards25519"
 	"golang.org/x/crypto/ed25519"
 )
 
@@ -56,36 +54,6 @@ func (key *SigningSecretKey) PublicKey() *SigningPublicKey {
 
 	sk := ed25519.NewKeyFromSeed(key[:SigningPublicKeyBytesSize])
 	publicKey.Copy(sk.Public().(ed25519.PublicKey))
-
-	godiumPublicKey := scalarmult.ScalarMultBase(nil, key[:])
-
-	fmt.Println(Base64UrlEncode(godiumPublicKey))
-	godiumPublicKey = scalarmult.Curve25519Base(nil, key[:])
-	fmt.Println(Base64UrlEncode(godiumPublicKey))
-
-	/* seed := key[:SigningPublicKeyBytesSize]
-
-	if l := len(seed); l != SigningPublicKeyBytesSize {
-		panic("ed25519: bad seed length: " + strconv.Itoa(l))
-	}
-
-	digest := sha512.Sum512(seed)
-	digest[0] &= 248
-	digest[31] &= 127 // 63 // 127
-	digest[31] |= 64
-
-	var A edwards25519.ExtendedGroupElement
-	var hBytes [32]byte
-	copy(hBytes[:], digest[:])
-	edwards25519.GeScalarMultBase(&A, &hBytes)
-	var publicKeyBytes [32]byte
-	A.ToBytes(&publicKeyBytes)
-
-	privateKey := make([]byte, SigningSecretKeyBytesSize)
-	copy(privateKey, seed)
-	copy(privateKey[32:], publicKeyBytes[:])
-
-	publicKey.Copy(publicKeyBytes[:]) */
 
 	return publicKey
 }
